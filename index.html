@@ -87,10 +87,10 @@
             
             const query = document.getElementById("search").value.trim().toLowerCase();
             const statusMessage = document.getElementById("statusMessage");
-            const matchedRecord = records.find(record => record.name.toLowerCase() === query);
+            const matchedRecord = records.find(record => record["請問您的姓名?"] && record["請問您的姓名?"].toLowerCase() === query);
             
             if (matchedRecord) {
-                statusMessage.innerHTML = `<strong>${matchedRecord.name}</strong>: ${matchedRecord.status || matchedRecord["狀態"] || "無狀態"} (最後簽到時間: ${matchedRecord.checkin || matchedRecord["check-in"] || matchedRecord["簽到時間"] || "無"}, 最後簽退時間: ${matchedRecord.checkout || matchedRecord["check-out"] || matchedRecord["簽退時間"] || "無"})`;
+                statusMessage.innerHTML = `<strong>${matchedRecord["請問您的姓名?"]}</strong>: 簽到時間: ${matchedRecord["簽到開始時間"] || "無"}, 簽退時間: ${matchedRecord["簽退完成"] || "無"}`;
             } else {
                 statusMessage.innerText = "查無符合的記錄。";
             }
