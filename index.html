@@ -37,7 +37,7 @@
     
     <script>
         let records = [];
-        const csvUrl = "https://docs.google.com/spreadsheets/d/1oWKjDENKBE4z9eDoPHEGn8RaqxkqxOgfEbMj35p3Yd4/export?format=csv"; // Corrected Google Sheets CSV export link
+        const csvUrl = "https://docs.google.com/spreadsheets/d/1oWKjDENKBE4z9eDoPHEGn8RaqxkqxOgfEbMj35p3Yd4/export?format=csv"; 
 
         async function fetchCSVFromCloud() {
             try {
@@ -62,8 +62,7 @@
             const lines = csvData.split("\n").map(line => line.trim()).filter(line => line.length > 0);
             if (lines.length < 2) return [];
             
-            // Remove BOM characters if present
-            let headers = lines[0].replace(/\ufeff/g, "").split(",").map(h => h.trim().toLowerCase()); // Normalize headers
+            let headers = lines[0].replace(/\ufeff/g, "").split(",").map(h => h.trim());
             const result = [];
 
             for (let i = 1; i < lines.length; i++) {
@@ -71,7 +70,7 @@
                 if (values.length === headers.length) {
                     let record = {};
                     headers.forEach((header, index) => {
-                        record[header] = values[index] || "無"; // Handle empty values
+                        record[header] = values[index] || "無";
                     });
                     result.push(record);
                 }
@@ -96,7 +95,6 @@
             }
         }
 
-        // Fetch CSV data first, then refresh every 30 seconds
         fetchCSVFromCloud().then(() => {
             setInterval(fetchCSVFromCloud, 30000);
         });
