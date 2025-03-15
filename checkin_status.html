@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學得力平台課程簽到退查詢</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input {
+            padding: 8px;
+            width: 300px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>學得力平台課程簽到退查詢</h2>
+    <p id="statusMessage">數據載入中...</p>
+    <input type="text" id="search" placeholder="請輸入您的姓名..." oninput="filterRecords()" disabled>
+    
+    <script>
+        let records = [];
+        const csvUrl = "https://docs.google.com/spreadsheets/d/1oWKjDENKBE4z9eDoPHEGn8RaqxkqxOgfEbMj35p3Yd4/export?format=csv"; // Corrected Google Sheets CSV export link
+
+        async function fetchCSVFromCloud() {
+            try {
+                const response = await fetch(csvUrl, {
+                    method: 'GET',
+                    headers: { 'Cache-Control': 'no-cache' }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const csvData = await response.text();
+                records = parseCSV(csvData);
+                document.getElementById("search").disabled = false;
+                document.getElementById("statusMessage").innerText = "數據已成功載入，請輸入您的姓名以查詢簽到狀態。";
+            } catch (error) {
+                console.error('CSV 載入失敗:', error);
+                document.getElementById("statusMessage").innerText = "數據載入失敗，請檢查檔案或網絡連接。";
+            }
+        }
+
+        function parseCSV(csvData) {
+            const lines = csvData.split("\n").map(line => line.trim()).filter(line => line.length > 0);
+            if (lines.length < 2) return [];
+            
+            // Remove BOM characters if present
+            let headers = lines[0].replace(/\ufeff/g, "").split(",").map(h => h.trim().toLowerCase()); // Normalize headers
+            const result = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(",").map(v => v.trim());
+                if (values.length === headers.length) {
+                    let record = {};
+                    headers.forEach((header, index) => {
+                        record[header] = values[index] || "無"; // Handle empty values
+                    });
+                    result.push(record);
+                }
+            }
+            return result;
+        }
+
+        function filterRecords() {
+            if (records.length === 0) {
+                document.getElementById("statusMessage").innerText = "數據尚未載入，請稍候。";
+                return;
+            }
+            
+            const query = document.getElementById("search").value.trim().toLowerCase();
+            const statusMessage = document.getElementById("statusMessage");
+            const matchedRecord = records.find(record => record.name.toLowerCase() === query);
+            
+            if (matchedRecord) {
+                statusMessage.innerHTML = `<strong>${matchedRecord.name}</strong>: ${matchedRecord.status || matchedRecord["狀態"] || "無狀態"} (最後簽到時間: ${matchedRecord.checkin || matchedRecord["check-in"] || matchedRecord["簽到時間"] || "無"}, 最後簽退時間: ${matchedRecord.checkout || matchedRecord["check-out"] || matchedRecord["簽退時間"] || "無"})`;
+            } else {
+                statusMessage.innerText = "查無符合的記錄。";
+            }
+        }
+
+        // Fetch CSV data first, then refresh every 30 seconds
+        fetchCSVFromCloud().then(() => {
+            setInterval(fetchCSVFromCloud, 30000);
+        });
+    </script>
+</body>
+</html>
