@@ -32,16 +32,18 @@
     </style>
 </head>
 <body>
-    <h2>學得力平台課程簽到退查詢</h2>
+    <img src="https://s.teachifycdn.com/image/width=400,quality=80/school/logo/eae9d68a-9d85-4b32-ba52-d75d7c0fe9dd/b1c025ce-1828-482f-9708-0596bae92a7f.jpg" alt="Company Logo" style="width:300px; margin-bottom: 20px;">
+<h2>平台課程簽到退查詢</h2>
     <p id="statusMessage">數據載入中...</p>
     <input type="text" id="search" placeholder="請輸入您的姓名..." oninput="filterRecords()" disabled>
     
     <table id="resultTable">
         <thead>
             <tr>
-                <th>姓名</th>
-                <th>簽到時間</th>
-                <th>簽退時間</th>
+                <th style="width: 15%;">姓名</th>
+                <th style="width: 40%;">參與課程</th>
+                <th style="width: 15%;">簽到時間</th>
+                <th style="width: 15%;">簽退時間</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -108,7 +110,7 @@
                 resultTable.style.display = "table";
                 matchedRecords.forEach(record => {
                     const row = document.createElement("tr");
-                    row.innerHTML = `<td>${record["請問您的姓名?"]}</td><td>${record["簽到開始時間"] || "無"}</td><td>${record["簽退完成"] || "無"}</td>`;
+                    row.innerHTML = `<td>${record["請問您的姓名?"]}</td><td>${record["參與課程"] || "無"}</td><td>${record["簽到開始時間"] || "無"}</td><td>${record["簽退完成"] || "無"}</td>`;
                     tbody.appendChild(row);
                 });
                 statusMessage.innerText = "查詢結果如下:";
@@ -124,3 +126,4 @@
     </script>
 </body>
 </html>
+
