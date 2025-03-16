@@ -10,10 +10,16 @@
             margin: 20px;
             text-align: center;
         }
+        input {
+            padding: 8px;
+            width: 300px;
+            margin-top: 10px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            display: none;
         }
         th, td {
             border: 1px solid black;
@@ -23,11 +29,6 @@
         th {
             background-color: #f2f2f2;
         }
-        input {
-            padding: 8px;
-            width: 300px;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
@@ -35,9 +36,20 @@
     <p id="statusMessage">數據載入中...</p>
     <input type="text" id="search" placeholder="請輸入您的姓名..." oninput="filterRecords()" disabled>
     
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>姓名</th>
+                <th>簽到時間</th>
+                <th>簽退時間</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    
     <script>
         let records = [];
-        const csvUrl = "https://docs.google.com/spreadsheets/d/1gS74d2SVuJLoqy8nZukeabsAUgMld6a1Ui4NxUnptXQ/export?format=csv"; 
+        const csvUrl = "https://docs.google.com/spreadsheets/d/1gS74d2SVuJLoqy8nZukeabsAUgMld6a1Ui4NxUnptXQ/export?format=csv";
 
         async function fetchCSVFromCloud() {
             try {
@@ -86,11 +98,22 @@
             
             const query = document.getElementById("search").value.trim().toLowerCase();
             const statusMessage = document.getElementById("statusMessage");
-            const matchedRecord = records.find(record => record["請問您的姓名?"] && record["請問您的姓名?"].toLowerCase() === query);
+            const resultTable = document.getElementById("resultTable");
+            const tbody = resultTable.querySelector("tbody");
+            tbody.innerHTML = "";
             
-            if (matchedRecord) {
-                statusMessage.innerHTML = `<strong>${matchedRecord["請問您的姓名?"]}</strong>: 簽到時間: ${matchedRecord["簽到開始時間"] || "無"}, 簽退時間: ${matchedRecord["簽退完成"] || "無"}`;
+            const matchedRecords = records.filter(record => record["請問您的姓名?"] && record["請問您的姓名?"].toLowerCase() === query);
+            
+            if (matchedRecords.length > 0) {
+                resultTable.style.display = "table";
+                matchedRecords.forEach(record => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `<td>${record["請問您的姓名?"]}</td><td>${record["簽到開始時間"] || "無"}</td><td>${record["簽退完成"] || "無"}</td>`;
+                    tbody.appendChild(row);
+                });
+                statusMessage.innerText = "查詢結果如下:";
             } else {
+                resultTable.style.display = "none";
                 statusMessage.innerText = "查無符合的記錄。";
             }
         }
