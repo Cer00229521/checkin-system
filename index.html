@@ -65,7 +65,7 @@
                 const csvData = await response.text();
                 records = parseCSV(csvData);
                 document.getElementById("search").disabled = false;
-                document.getElementById("statusMessage").innerText = "數據已成功載入，請輸入您的姓名以查詢簽到狀態。";
+                document.getElementById("statusMessage").innerText = "請於課程開始後半小時至結束後一小時，輸入您的姓名以查詢簽到狀態。";
             } catch (error) {
                 console.error('CSV 載入失敗:', error);
                 document.getElementById("statusMessage").innerText = "數據載入失敗，請檢查檔案或網絡連接。";
